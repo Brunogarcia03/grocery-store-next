@@ -6,17 +6,12 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "127.0.0.1",
-      },
-      {
-        protocol: "http",
-        hostname: "localhost",
-      },
-      {
         protocol: "https",
-        hostname: process.env.NEXT_PUBLIC_BACKEND_URL,
+        hostname: "strapi-grocery-store.onrender.com",
+        port: "",
+        pathname: "/**",
       },
+      // Agrega más patrones si es necesario
     ],
   },
 };
