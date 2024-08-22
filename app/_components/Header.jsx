@@ -41,16 +41,25 @@ import { toast } from "sonner";
 
 function Header() {
   const [categories, setCategories] = useState([]);
-  const isLogin = sessionStorage.getItem("jwt") ? true : false;
-  const jwt = sessionStorage.getItem("jwt");
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  const [isLogin, setIsLogin] = useState(false);
+  const [jwt, setJwt] = useState(null);
+  const [user, setUser] = useState(null);
   const [totalCartItem, setTotalCartItem] = useState(0);
-  const { updateCart, setUpdateCart } = useContext(updateCartContext);
   const [cartItemList, setCartItemsList] = useState([]);
+  const [subTotal, setSubtotal] = useState(0);
 
+  const { updateCart } = useContext(updateCartContext);
   const router = useRouter();
 
   useEffect(() => {
+    // Initialize sessionStorage data on the client side
+    const jwtToken = sessionStorage.getItem("jwt");
+    const userData = JSON.parse(sessionStorage.getItem("user"));
+
+    setJwt(jwtToken);
+    setUser(userData);
+    setIsLogin(!!jwtToken);
+
     const getData = async () => {
       const data = await getCategoryList();
       setCategories(data);
@@ -59,11 +68,17 @@ function Header() {
     getData();
   }, []);
 
-  const getCartList = async () => {
-    const data = await getCartItems(user?.id, jwt);
-    setTotalCartItem(data?.length);
-    setCartItemsList(data);
-  };
+  useEffect(() => {
+    const getCartList = async () => {
+      if (jwt && user) {
+        const data = await getCartItems(user?.id, jwt);
+        setTotalCartItem(data?.length || 0);
+        setCartItemsList(data || []);
+      }
+    };
+
+    getCartList();
+  }, [updateCart, jwt, user]);
 
   useEffect(() => {
     const getCartList = async () => {
@@ -88,8 +103,6 @@ function Header() {
       await getCartList();
     });
   };
-
-  const [subTotal, setSubtotal] = useState(0);
 
   useEffect(() => {
     let total = 0;
@@ -124,7 +137,7 @@ function Header() {
             <DropdownMenuLabel>Browse Category</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {categories.map((cat, index) => (
-              <Link key={index} href={"/category/" + cat?.attributes?.name}>
+              <Link key={cat.id} href={"/category/" + cat?.attributes?.name}>
                 <DropdownMenuItem
                   key={index}
                   className="flex gap-2 items-center cursor-pointer"

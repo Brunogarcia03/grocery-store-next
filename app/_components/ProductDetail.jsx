@@ -10,8 +10,8 @@ import { toast } from "sonner";
 import { updateCartContext } from "../_context/UpdateCartContext";
 
 function ProductDetail({ product }) {
-  const jwt = sessionStorage.getItem("jwt");
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  const jwt = window.sessionStorage.getItem("jwt");
+  const user = JSON.parse(window.sessionStorage.getItem("user"));
   const { updateCart, setUpdateCart } = useContext(updateCartContext);
   const [totalPrice, setTotalPrice] = useState(
     product?.attributes?.sellingPrice

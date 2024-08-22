@@ -9,27 +9,44 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import moment from "moment";
-import MyOrderItem from "@/app/MyOrderItem";
+import MyOrderItem from "@/app/(routes)/my-order/_componente/MyOrderItem";
 
 function MyOrder() {
-  const jwt = sessionStorage.getItem("jwt");
-  const user = JSON.parse(sessionStorage.getItem("user"));
-
+  const [jwt, setJwt] = useState(null);
+  const [user, setUser] = useState(null);
   const [orderList, setOrderList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const router = useRouter();
 
   useEffect(() => {
-    if (!jwt) {
+    const storedJwt = sessionStorage.getItem("jwt");
+    const storedUser = sessionStorage.getItem("user");
+
+    if (storedJwt && storedUser) {
+      setJwt(storedJwt);
+      setUser(JSON.parse(storedUser));
+    } else {
       router.replace("/");
     }
-
-    getOrderList();
   }, []);
 
+  useEffect(() => {
+    if (jwt && user) {
+      getOrderList();
+    }
+  }, [jwt, user]);
+
   const getOrderList = async () => {
-    const orderList_ = await getMyOrder(user.id, jwt);
-    setOrderList(orderList_);
+    try {
+      const orderList_ = await getMyOrder(user.id, jwt);
+      setOrderList(orderList_);
+    } catch (error) {
+      setError("Failed to fetch orders. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -46,7 +63,7 @@ function MyOrder() {
                 <div className="border shadow-md p-2 rounded-md bg-slate-100 flex justify-evenly gap-14">
                   <h2>
                     <span className="font-bold mr-2">Order date:</span>{" "}
-                    {moment(item?.createdAt).format("DD/MMM/yyy")}
+                    {moment(item?.createdAt).format("DD/MMM/yyyy")}
                   </h2>
                   <h2>
                     <span className="font-bold mr-2">Total amount:</span>{" "}

@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import {
   createOrder,
   deleteCartItems,
@@ -10,19 +11,15 @@ import { Input } from "@/components/ui/input";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { ArrowBigRight, Currency } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 function Checkout() {
   const [totalCart, setTotalCart] = useState(0);
   const [cartItemsList, setCartItemsList] = useState([]);
   const [subTotal, setSubTotal] = useState(0);
-  const user = JSON.parse(sessionStorage.getItem("user"));
-  const jwt = sessionStorage.getItem("jwt");
-
   const [totalAmount, setTotalAmount] = useState();
-
-  const router = useRouter();
+  const [user, setUser] = useState(null);
+  const [jwt, setJwt] = useState(null);
 
   const [username, setUsername] = useState();
   const [email, setEmail] = useState();
@@ -30,14 +27,23 @@ function Checkout() {
   const [zip, setZip] = useState();
   const [address, setAddress] = useState();
 
+  const router = useRouter();
+
   useEffect(() => {
-    if (!jwt) {
+    const user_ = JSON.parse(window.sessionStorage.getItem("user"));
+    const jwt_ = window.sessionStorage.getItem("jwt");
+
+    if (!jwt_) {
       router.push("/sign-in");
+      return;
     }
-    getDataCartItems();
+
+    setUser(user_);
+    setJwt(jwt_);
+    getDataCartItems(user_, jwt_);
   }, []);
 
-  const getDataCartItems = async () => {
+  const getDataCartItems = async (user, jwt) => {
     const cartItemList = await getCartItems(user.id, jwt);
     setTotalCart(cartItemList?.length);
     setCartItemsList(cartItemList);
@@ -49,12 +55,10 @@ function Checkout() {
       total = total + element.amount;
     });
     setTotalAmount((total + total * 0.9 + 15).toFixed(2));
-
     setSubTotal(total.toFixed(2));
   }, [cartItemsList]);
 
   const onApprove = (data) => {
-    console.log(data);
     const payLoad = {
       data: {
         paymentId: data.paymentId.toString(),
@@ -70,12 +74,11 @@ function Checkout() {
     };
 
     createOrder(payLoad, jwt).then((resp) => {
-      toast("Order places successfully!");
+      toast("Order placed successfully!");
       cartItemsList.forEach(async (item, index) => {
-        await deleteCartItems(item.id).then((resp) => {});
+        await deleteCartItems(item.id);
       });
-
-      router.replace("/orden-confirmation");
+      router.replace("/order-confirmation");
     });
   };
 
@@ -131,9 +134,6 @@ function Checkout() {
             <h2 className="font-bold flex justify-between">
               Total: <span>${totalAmount}</span>
             </h2>
-            {/* <Button onClick={() => onApprove({ paymentId: 123 })}>
-              Payment <ArrowBigRight />
-            </Button> */}
             {totalAmount > 15 && (
               <PayPalButtons
                 disabled={!(username && email && phone && address && zip)}

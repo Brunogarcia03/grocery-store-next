@@ -1,9 +1,9 @@
 import Image from "next/image";
 import React from "react";
 
-function MyOrderItem({ orderItem }) {
+function MyOrderItem({ orderItem, index }) {
   return (
-    <div className="w-[60%] shadow-md px-4">
+    <div key={index} className="w-[60%] shadow-md px-4">
       <div className="grid grid-cols-5 mt-3 items-center">
         <Image
           src={

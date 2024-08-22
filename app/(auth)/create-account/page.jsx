@@ -19,7 +19,7 @@ function CreateAccount() {
   const router = useRouter();
 
   useEffect(() => {
-    const jwt = sessionStorage.getItem("jwt");
+    const jwt = window.sessionStorage.getItem("jwt");
     if (jwt) {
       router.push("/");
     }
