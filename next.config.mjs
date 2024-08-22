@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["127.0.0.1", "localhost", "strapi-grocery-store.onrender.com"],
+    domains: ["127.0.0.1", "localhost", process.env.NEXT_PUBLIC_BACKEND_URL],
   },
 };
 
