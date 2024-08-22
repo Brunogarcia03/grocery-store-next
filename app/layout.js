@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { updateCartContext } from "./_context/UpdateCartContext";
 import { useState } from "react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import Footer from "./_components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
           <updateCartContext.Provider value={{ updateCart, setUpdateCart }}>
             {showHeader && <Header />}
             {children}
+            {showHeader && <Footer />}
             <Toaster />
           </updateCartContext.Provider>
         </body>

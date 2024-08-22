@@ -4,7 +4,6 @@ import { getAllProducts, getCategoryList, getSlider } from "./_utils/GlobalApi";
 import Categories from "./_components/Categories";
 import Products from "./_components/Products";
 import Image from "next/image";
-import Footer from "./_components/Footer";
 
 async function Home() {
   const sliderList = await getSlider();
@@ -25,8 +24,6 @@ async function Home() {
         className="w-full h-[400px] object-contain"
         alt="banner home page"
       />
-
-      <Footer />
     </div>
   );
 }
