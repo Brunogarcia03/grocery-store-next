@@ -4,15 +4,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "strapi-grocery-store.onrender.com",
-        port: "",
-        pathname: "/**",
-      },
-      // Agrega más patrones si es necesario
-    ],
+    domains: [NEXT_PUBLIC_BASE_BACKEND_URL],
   },
 };
 
