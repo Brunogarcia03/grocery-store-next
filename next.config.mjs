@@ -4,7 +4,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: [NEXT_PUBLIC_BASE_BACKEND_URL],
+    domains: [process.env.NEXT_PUBLIC_BASE_BACKEND_URL],
   },
 };
 
