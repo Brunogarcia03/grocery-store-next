@@ -1,10 +1,11 @@
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: [new URL(process.env.NEXT_PUBLIC_BASE_BACKEND_URL).hostname],
+    domains: ["strapi-grocery-store.onrender.com"], // Coloca directamente el dominio aquí como una cadena
   },
 };
 
