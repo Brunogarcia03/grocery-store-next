@@ -137,24 +137,26 @@ function Header() {
             <DropdownMenuLabel>Browse Category</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {categories.map((cat, index) => (
-              <Link key={cat.id} href={"/category/" + cat?.attributes?.name}>
-                <DropdownMenuItem
-                  key={index}
-                  className="flex gap-2 items-center cursor-pointer"
-                >
-                  <Image
-                    src={
-                      process.env.NEXT_PUBLIC_BASE_BACKEND_URL +
-                      cat?.attributes?.icon?.data?.attributes?.url
-                    }
-                    unoptimized={true}
-                    alt="icon"
-                    width={27}
-                    height={27}
-                  />
-                  <h2>{cat?.attributes?.name}</h2>
-                </DropdownMenuItem>
-              </Link>
+              <div key={index}>
+                <Link href={"/category/" + cat?.attributes?.name}>
+                  <DropdownMenuItem
+                    key={index}
+                    className="flex gap-2 items-center cursor-pointer"
+                  >
+                    <Image
+                      src={
+                        process.env.NEXT_PUBLIC_BASE_BACKEND_URL +
+                        cat?.attributes?.icon?.data?.attributes?.url
+                      }
+                      unoptimized={true}
+                      alt="icon"
+                      width={27}
+                      height={27}
+                    />
+                    <h2>{cat?.attributes?.name}</h2>
+                  </DropdownMenuItem>
+                </Link>
+              </div>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>

@@ -5,7 +5,13 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: ["strapi-grocery-store.onrender.com"], // Coloca directamente el dominio aquí como una cadena
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "strapi-grocery-store.onrender.com",
+        pathname: "/uploads/**",
+      },
+    ],
   },
 };
 
