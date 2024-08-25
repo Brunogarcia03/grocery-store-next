@@ -1,7 +1,9 @@
 const { default: axios } = require("axios");
 
+const baseURL = `${process.env.NEXT_PUBLIC_BASE_BACKEND_URL}/api`;
+
 const axiosClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BASE_BACKEND_URL + "/api",
+  baseURL: baseURL,
 });
 
 export const getSlider = () =>
@@ -58,13 +60,15 @@ export const getCartItems = (userId, jwt) =>
           quantity: item.attributes?.quantity,
           amount: item.attributes?.amount,
           image:
-            item.attributes.products?.data[0].attributes?.images?.data[0]
-              .attributes?.url,
-          actual: item.attributes?.products?.data[0].attributes.mrp,
+            item.attributes.products?.data[0].attributes.images?.data[0]
+              .attributes.url,
+          actual: item.attributes?.products.data[0].sellingPrice,
           id: item.id,
-          product: item.attributes?.products?.data[0].id,
+          product: item.attributes?.products.data[0].id,
         };
       });
+
+      console.log(cartItemsList);
       return cartItemsList;
     });
 

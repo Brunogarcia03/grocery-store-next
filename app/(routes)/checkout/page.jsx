@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { ArrowBigRight, Currency } from "lucide-react";
+import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -18,8 +19,8 @@ function Checkout() {
   const [cartItemsList, setCartItemsList] = useState([]);
   const [subTotal, setSubTotal] = useState(0);
   const [totalAmount, setTotalAmount] = useState();
-  const [user, setUser] = useState(null);
-  const [jwt, setJwt] = useState(null);
+  const jwt = getCookie("jwt") ? getCookie("jwt") : null;
+  const user = getCookie("user") ? getCookie("user") : null;
 
   const [username, setUsername] = useState();
   const [email, setEmail] = useState();
@@ -30,24 +31,19 @@ function Checkout() {
   const router = useRouter();
 
   useEffect(() => {
-    const user_ = JSON.parse(window.sessionStorage.getItem("user"));
-    const jwt_ = window.sessionStorage.getItem("jwt");
-
-    if (!jwt_) {
+    if (!jwt) {
       router.push("/sign-in");
       return;
     }
+    const userJson = JSON.parse(user);
+    const getDataCartItems = async (userJson, jwt) => {
+      const cartItemList = await getCartItems(userJson.id, jwt);
+      setTotalCart(cartItemList?.length);
+      setCartItemsList(cartItemList);
+    };
 
-    setUser(user_);
-    setJwt(jwt_);
-    getDataCartItems(user_, jwt_);
+    getDataCartItems(userJson, jwt);
   }, []);
-
-  const getDataCartItems = async (user, jwt) => {
-    const cartItemList = await getCartItems(user.id, jwt);
-    setTotalCart(cartItemList?.length);
-    setCartItemsList(cartItemList);
-  };
 
   useEffect(() => {
     let total = 0;

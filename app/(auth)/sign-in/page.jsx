@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { setCookie, getCookie } from "cookies-next";
 
 function SignIn() {
   const [email, setEmail] = useState();
@@ -18,7 +19,7 @@ function SignIn() {
   const router = useRouter();
 
   useEffect(() => {
-    const jwt = window.sessionStorage.getItem("jwt");
+    const jwt = getCookie("jwt");
     if (jwt) {
       router.push("/");
     }
@@ -28,10 +29,8 @@ function SignIn() {
     setLoader(true);
     signIn(email, password).then(
       (resp) => {
-        console.log(resp.data.user);
-        console.log(resp.data.jwt);
-        sessionStorage.setItem("user", JSON.stringify(resp.data.user));
-        sessionStorage.setItem("jwt", resp.data.jwt);
+        setCookie("user", JSON.stringify(resp.data.user));
+        setCookie("jwt", resp.data.jwt);
         toast("Login succesfully");
         setLoader(false);
         router.push("/");

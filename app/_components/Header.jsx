@@ -1,14 +1,14 @@
 "use client";
 
+import { useState, useEffect, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import {
   CircleUserRoundIcon,
-  LayoutGrid,
+  LayoutGridIcon,
   Search,
   ShoppingBasket,
 } from "lucide-react";
 import Image from "next/image";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,24 +26,23 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { updateCartContext } from "../_context/UpdateCartContext";
+import CartItemList from "./CartItemList";
+import { toast } from "sonner";
+import { getCookie, deleteCookie } from "cookies-next";
 import {
   deleteCartItems,
   getCartItems,
   getCategoryList,
 } from "../_utils/GlobalApi";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
-import { updateCartContext } from "../_context/UpdateCartContext";
-import CartItemList from "./CartItemList";
-import { toast } from "sonner";
 
 function Header() {
+  const jwt = getCookie("jwt") ? getCookie("jwt") : null;
+  const user = getCookie("user") ? getCookie("user") : null;
+  const isLogin = Boolean(jwt);
   const [categories, setCategories] = useState([]);
-  const [isLogin, setIsLogin] = useState(false);
-  const [jwt, setJwt] = useState(null);
-  const [user, setUser] = useState(null);
   const [totalCartItem, setTotalCartItem] = useState(0);
   const [cartItemList, setCartItemsList] = useState([]);
   const [subTotal, setSubtotal] = useState(0);
@@ -52,62 +51,45 @@ function Header() {
   const router = useRouter();
 
   useEffect(() => {
-    // Initialize sessionStorage data on the client side
-    const jwtToken = sessionStorage.getItem("jwt");
-    const userData = JSON.parse(sessionStorage.getItem("user"));
-
-    setJwt(jwtToken);
-    setUser(userData);
-    setIsLogin(!!jwtToken);
-
-    const getData = async () => {
+    const getDataCategories = async () => {
       const data = await getCategoryList();
       setCategories(data);
     };
 
-    getData();
+    getDataCategories();
   }, []);
 
   useEffect(() => {
     const getCartList = async () => {
       if (jwt && user) {
-        const data = await getCartItems(user?.id, jwt);
+        const user_ = JSON.parse(user);
+        const data = await getCartItems(user_.id, jwt);
         setTotalCartItem(data?.length || 0);
-        setCartItemsList(data || []);
+        setCartItemsList(data);
       }
     };
 
     getCartList();
   }, [updateCart, jwt, user]);
 
-  useEffect(() => {
-    const getCartList = async () => {
-      const data = await getCartItems(user?.id, jwt);
-      setTotalCartItem(data?.length);
-      setCartItemsList(data);
-    };
-
-    if (jwt) {
-      getCartList();
-    }
-  }, [updateCart]);
-
   const onSignOut = () => {
-    sessionStorage.clear();
+    deleteCookie("user");
+    deleteCookie("jwt");
     router.push("/sign-in");
   };
 
   const onDeleteCartItem = (id) => {
-    deleteCartItems(id, jwt).then(async (resp) => {
+    deleteCartItems(id, jwt).then(() => {
       toast("Item removed!");
-      await getCartList();
+      getCartList();
     });
   };
 
   useEffect(() => {
     let total = 0;
-    cartItemList.forEach((element) => {
-      total = total + element.amount;
+
+    cartItemList?.forEach((element) => {
+      total += element.amount;
     });
 
     setSubtotal(total.toFixed(2));
@@ -130,13 +112,13 @@ function Header() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <h2 className="md:flex hidden gap-2 items-center border rounded-full p-2 px-10 bg-slate-200 cursor-pointer">
-              <LayoutGrid className="w-5 h-5" /> Category
+              <LayoutGridIcon className="w-5 h-5" /> Category
             </h2>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>Browse Category</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {categories.map((cat, index) => (
+            {categories?.map((cat, index) => (
               <div key={index}>
                 <Link href={"/category/" + cat?.attributes?.name}>
                   <DropdownMenuItem
@@ -146,7 +128,7 @@ function Header() {
                     <Image
                       src={
                         process.env.NEXT_PUBLIC_BASE_BACKEND_URL +
-                        cat?.attributes?.icon?.data?.attributes?.url
+                        "/uploads/basket_5056ef21f0_c82b829e88.png"
                       }
                       unoptimized={true}
                       alt="icon"
@@ -219,9 +201,7 @@ function Header() {
               <Link href={"/my-order"}>
                 <DropdownMenuItem>My order</DropdownMenuItem>
               </Link>
-              <DropdownMenuItem onClick={() => onSignOut()}>
-                Logout
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onSignOut}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )}

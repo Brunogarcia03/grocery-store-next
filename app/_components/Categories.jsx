@@ -8,7 +8,7 @@ function Categories({ categoriesList }) {
       <h2 className="text-green-600 font-bold text-2xl mt-5">
         Shop by Category
       </h2>
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-5 mt-2">
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-5 mt-2">
         {categoriesList.map((category, index) => (
           <Link
             href={`/category/${category.attributes.name}`}

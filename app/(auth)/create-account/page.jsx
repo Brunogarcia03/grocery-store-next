@@ -8,6 +8,7 @@ import Link from "next/link";
 import { registerUser } from "@/app/_utils/GlobalApi";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { getCookie, setCookie } from "cookies-next";
 
 function CreateAccount() {
   const [username, setUsername] = useState();
@@ -19,7 +20,7 @@ function CreateAccount() {
   const router = useRouter();
 
   useEffect(() => {
-    const jwt = window.sessionStorage.getItem("jwt");
+    const jwt = getCookie("jwt");
     if (jwt) {
       router.push("/");
     }
@@ -29,8 +30,8 @@ function CreateAccount() {
     setLoader(true);
     registerUser(username, email, password).then(
       (resp) => {
-        sessionStorage.setItem("user", JSON.stringify(resp.data.user));
-        sessionStorage.setItem("jwt", resp.data.jwt);
+        setCookie("user", JSON.stringify(resp.data.user));
+        setCookie("jwt", resp.data.jwt);
         toast("Account created succesfully");
         setLoader(false);
         router.push("/");

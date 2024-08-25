@@ -8,10 +8,11 @@ import React, { useContext, useState } from "react";
 import { addToCardApi } from "../_utils/GlobalApi";
 import { toast } from "sonner";
 import { updateCartContext } from "../_context/UpdateCartContext";
+import { getCookie } from "cookies-next";
 
 function ProductDetail({ product }) {
-  const jwt = window.sessionStorage.getItem("jwt");
-  const user = JSON.parse(window.sessionStorage.getItem("user"));
+  const jwt = getCookie("jwt") ? getCookie("jwt") : null;
+  const user = getCookie("user") ? getCookie("user") : null;
   const { updateCart, setUpdateCart } = useContext(updateCartContext);
   const [totalPrice, setTotalPrice] = useState(
     product?.attributes?.sellingPrice
@@ -22,6 +23,7 @@ function ProductDetail({ product }) {
 
   const addToCard = () => {
     setLoading(true);
+
     if (!jwt) {
       router.push("/sign-in");
       setLoading(false);
@@ -33,12 +35,10 @@ function ProductDetail({ product }) {
         quantity: quantity,
         amount: (quantity * totalPrice).toFixed(2),
         products: product?.id,
-        users_permissions_users: user.id,
-        userId: user.id,
+        users_permissions_users: JSON.parse(getCookie("user")).id,
+        userId: JSON.parse(getCookie("user")).id,
       },
     };
-
-    console.log(data);
 
     addToCardApi(data, jwt).then(
       (resp) => {
