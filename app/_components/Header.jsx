@@ -128,7 +128,7 @@ function Header() {
                     <Image
                       src={
                         process.env.NEXT_PUBLIC_BASE_BACKEND_URL +
-                        "/uploads/basket_5056ef21f0_c82b829e88.png"
+                        cat?.attributes?.icon?.data?.attributes?.url
                       }
                       unoptimized={true}
                       alt="icon"
