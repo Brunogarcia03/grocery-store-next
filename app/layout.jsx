@@ -12,6 +12,12 @@ import Footer from "./_components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
+export const metadata = {
+  title: "Grocery Store E-commerce",
+  description:
+    "Buy the best products in our online store. Find a wide variety of quality items at competitive prices.",
+};
+
 export default function RootLayout({ children }) {
   const params = usePathname();
   const showHeader =
